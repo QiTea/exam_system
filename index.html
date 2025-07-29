@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
+    <title>AWS考试系统</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AWS考试系统</h1>
+            <div class="stats" id="stats">
+                <span>总题数: <span id="totalQuestions">0</span></span>
+                <span>答对: <span id="correctCount">0</span></span>
+                <span>答错: <span id="wrongCount">0</span></span>
+                <span>错题库: <span id="wrongBankCount">0</span></span>
+            </div>
+        </header>
+
+        <nav class="nav-buttons">
+            <button id="practiceBtn" class="nav-btn active">练习模式</button>
+            <button id="wrongBankBtn" class="nav-btn">错题库</button>
+            <button id="examBtn" class="nav-btn">模拟考试</button>
+            <button id="statsBtn" class="nav-btn">统计查看</button>
+        </nav>
+
+        <!-- 练习模式 -->
+        <div id="practiceMode" class="mode active">
+            <div class="question-container">
+                <div class="question-header">
+                    <div id="QuestionNumber" class="question-number">题目 1</div>
+                    <div id="QuestionType" class="question-type">单选题</div>
+                </div>
+                
+                <div id="QuestionImage" class="question-image" style="display: none;">
+                    <img id="QuestionImg" src="" alt="题目图片" />
+                </div>
+                
+                <div class="question-content">
+                    <div id="QuestionText" class="question-text"></div>
+                    <div id="Options" class="options"></div>
+                </div>
+                
+                <div class="question-actions">
+                    <button id="submitAnswer" class="btn btn-primary">提交答案</button>
+                    <button id="nextQuestion" class="btn btn-secondary" style="display: none;">下一题</button>
+                    <button id="showExplanation" class="btn btn-info" style="display: none;">查看解析</button>
+                </div>
+                
+                <div id="explanation" class="explanation" style="display: none;">
+                    <h4>解析：</h4>
+                    <p id="explanationText"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 错题库模式 -->
+        <div id="wrongBankMode" class="mode">
+            <div class="wrong-bank-info">
+                <h2>错题库</h2>
+                <p>当前错题数量: <span id="wrongBankTotal">0</span></p>
+                <button id="startWrongBank" class="btn btn-primary">开始练习</button>
+                <button id="clearWrongBank" class="btn btn-danger">清空错题库</button>
+            </div>
+            
+            <div id="wrongBankQuestions" class="question-container" style="display: none;">
+                <div class="question-header">
+                    <div id="wrongQuestionNumber" class="question-number">题目 1</div>
+                    <div id="wrongQuestionType" class="question-type">单选题</div>
+                </div>
+                
+                <div id="wrongQuestionImage" class="question-image" style="display: none;">
+                    <img id="wrongQuestionImg" src="" alt="题目图片" />
+                </div>
+                
+                <div class="question-content">
+                    <div id="wrongQuestionText" class="question-text"></div>
+                    <div id="wrongOptions" class="options"></div>
+                </div>
+                
+                <div class="question-actions">
+                    <button id="submitWrongAnswer" class="btn btn-primary">提交答案</button>
+                    <button id="nextWrongQuestion" class="btn btn-secondary" style="display: none;">下一题</button>
+                    <button id="showWrongExplanation" class="btn btn-info" style="display: none;">查看解析</button>
+                    <button id="removeFromWrongBank" class="btn btn-success" style="display: none;">移出错题库</button>
+                </div>
+                
+                <div id="wrongExplanation" class="explanation" style="display: none;">
+                    <h4>解析：</h4>
+                    <p id="wrongExplanationText"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 模拟考试模式 -->
+        <div id="examMode" class="mode">
+            <div class="exam-info">
+                <h2>模拟考试</h2>
+                <p>随机选择100道题目进行模拟考试</p>
+                <div class="exam-settings">
+                    <label>
+                        考试时长: 
+                        <select id="examDuration">
+                            <option value="60">60分钟</option>
+                            <option value="90">90分钟</option>
+                            <option value="120" selected>120分钟</option>
+                            <option value="180">180分钟</option>
+                        </select>
+                    </label>
+                </div>
+                <button id="startExam" class="btn btn-primary">开始考试</button>
+            </div>
+            
+            <div class="exam-container" id="examContainer" style="display: none;">
+                <div class="exam-header">
+                    <div class="exam-progress">
+                        <span>第 <span id="examCurrentQ">1</span> 题 / 共 100 题</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="examProgress"></div>
+                        </div>
+                    </div>
+                    <div class="exam-timer">
+                        <span id="examTimer">02:00:00</span>
+                    </div>
+                </div>
+                
+                <div class="question-container">
+                    <div class="question-header">
+                        <span id="examQuestionNumber">题目 1</span>
+                        <span id="examQuestionType">单选题</span>
+                    </div>
+                    
+                    <div class="question-image" id="examQuestionImage" style="display: none;">
+                        <img id="examQuestionImg" src="" alt="题目图片">
+                    </div>
+                    
+                    <div class="question-text" id="examQuestionText">
+                        加载中...
+                    </div>
+                    
+                    <div class="options" id="examOptions">
+                        <!-- 选项将通过JavaScript动态生成 -->
+                    </div>
+                    
+                    <div class="question-actions">
+                        <button id="examPrevQuestion" class="btn btn-secondary">上一题</button>
+                        <button id="examNextQuestion" class="btn btn-primary">下一题</button>
+                        <button id="finishExam" class="btn btn-success" style="display: none;">交卷</button>
+                    </div>
+                </div>
+                
+                <div class="exam-sidebar">
+                    <h3>答题卡</h3>
+                    <div class="answer-sheet" id="answerSheet">
+                        <!-- 答题卡将动态生成 -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="exam-result" id="examResult" style="display: none;">
+                <h2>考试结果</h2>
+                <div class="result-summary">
+                    <div class="score">
+                        <span class="score-value" id="examScore">0</span>
+                        <span class="score-total">/ 100</span>
+                    </div>
+                    <div class="result-details">
+                        <p>答对题数: <span id="examCorrect">0</span></p>
+                        <p>答错题数: <span id="examWrong">0</span></p>
+                        <p>未答题数: <span id="examUnanswered">0</span></p>
+                        <p>正确率: <span id="examAccuracy">0%</span></p>
+                    </div>
+                </div>
+                <div class="result-actions">
+                    <button id="reviewExam" class="btn btn-primary">查看详细解析</button>
+                    <button id="newExam" class="btn btn-secondary">重新考试</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 统计查看模式 -->
+        <div id="statsMode" class="mode">
+            <div class="stats-container">
+                <h2>学习统计</h2>
+                
+                <div class="stats-summary">
+                    <div class="stat-card">
+                        <h3>总体统计</h3>
+                        <p>总题数: <span id="statsTotalQuestions">0</span></p>
+                        <p>已练习: <span id="statsPracticedQuestions">0</span></p>
+                        <p>练习率: <span id="statsPracticeRate">0%</span></p>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <h3>正确率统计</h3>
+                        <p>总答对: <span id="statsTotalCorrect">0</span></p>
+                        <p>总答错: <span id="statsTotalWrong">0</span></p>
+                        <p>整体正确率: <span id="statsOverallAccuracy">0%</span></p>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <h3>错题统计</h3>
+                        <p>错题总数: <span id="statsWrongTotal">0</span></p>
+                        <p>最近清理: <span id="statsLastClear">从未</span></p>
+                    </div>
+                </div>
+                
+                <div class="stats-actions">
+                    <button id="exportStats" class="btn btn-primary">导出统计数据</button>
+                    <button id="resetStats" class="btn btn-danger">重置所有数据</button>
+                </div>
+                
+                <div class="question-stats">
+                    <h3>题目详细统计</h3>
+                    <div class="stats-filter">
+                        <select id="statsFilter">
+                            <option value="all">所有题目</option>
+                            <option value="correct">答对题目</option>
+                            <option value="wrong">答错题目</option>
+                            <option value="unanswered">未练习题目</option>
+                        </select>
+                        <input type="text" id="statsSearch" placeholder="搜索题目...">
+                    </div>
+                    <div id="questionStatsList" class="question-stats-list">
+                        <!-- 题目统计列表将动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="questions.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
