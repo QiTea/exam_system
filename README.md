@@ -9,6 +9,7 @@
    - 源文件一般是pdf或者word，最终需要都转换成txt，示例参考：exam_questions.txt
    - 使用js将exam_questions.txt转换成exam_questions.json
    - 保存好exam_questions.txt之后，打开命令行，输入：node questions.js，这个命令需要node环境，或者使用python解析
+   - questions.js是是用正则匹配规则，所以换行也可能会导致解析的结果出现偏差，需要对解析后的文件核对
    - 将exam_questions.json所有内容复制粘贴到questions.js中，最终格式是const EXAM_QUESTIONS = []
    - questions.js里面就是题库
    - 对于图片文件，再app.js文件的hasQuestionImage方法，指定图片数组（用题目id号命名），然后将图片文件放在根目录，对应的题目就可以加载图片
